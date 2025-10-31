@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>推荐助手 API 测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .api-section {
+            margin-bottom: 40px;
+            padding: 30px;
+            border: 2px solid #f0f0f0;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .api-section:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.1);
+        }
+        
+        .api-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .response {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .response pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-success {
+            background: #28a745;
+        }
+        
+        .status-error {
+            background: #dc3545;
+        }
+        
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 推荐助手 API 测试</h1>
+            <p>测试推荐系统的各个API接口</p>
+        </div>
+        
+        <div class="content">
+            <!-- 健康检查 -->
+            <div class="api-section">
+                <h2>🏥 健康检查</h2>
+                <button class="btn" onclick="checkHealth()">检查API状态</button>
+                <div id="health-response" class="response" style="display: none;"></div>
+            </div>
+            
+            <!-- 推荐API -->
+            <div class="api-section">
+                <h2>🎯 商品推荐</h2>
+                <div class="form-group">
+                    <label for="rec-userId">用户ID:</label>
+                    <input type="text" id="rec-userId" value="user123" placeholder="输入用户ID">
+                </div>
+                <div class="form-group">
+                    <label for="rec-query">查询内容:</label>
+                    <input type="text" id="rec-query" value="手机" placeholder="输入查询内容">
+                </div>
+                <button class="btn" onclick="getRecommendations()">获取推荐</button>
+                <div id="rec-response" class="response" style="display: none;"></div>
+            </div>
+            
+            <!-- 聊天API -->
+            <div class="api-section">
+                <h2>💬 智能聊天</h2>
+                <div class="form-group">
+                    <label for="chat-userId">用户ID:</label>
+                    <input type="text" id="chat-userId" value="user123" placeholder="输入用户ID">
+                </div>
+                <div class="form-group">
+                    <label for="chat-message">消息内容:</label>
+                    <textarea id="chat-message" rows="3" placeholder="输入您的消息">我想买一部新手机，有什么推荐吗？</textarea>
+                </div>
+                <button class="btn" onclick="sendChatMessage()">发送消息</button>
+                <div id="chat-response" class="response" style="display: none;"></div>
+            </div>
+            
+            <!-- 用户行为记录API -->
+            <div class="api-section">
+                <h2>📝 用户行为记录</h2>
+                <div class="form-group">
+                    <label for="action-userId">用户ID:</label>
+                    <input type="text" id="action-userId" value="user123" placeholder="输入用户ID">
+                </div>
+                <div class="form-group">
+                    <label for="action-type">行为类型:</label>
+                    <select id="action-type" style="width: 100%; padding: 12px 16px; border: 2px solid #e1e5e9; border-radius: 8px;">
+                        <option value="view">查看商品</option>
+                        <option value="click">点击商品</option>
+                        <option value="purchase">购买商品</option>
+                        <option value="like">喜欢商品</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="action-itemId">商品ID:</label>
+                    <input type="text" id="action-itemId" value="product_1" placeholder="输入商品ID">
+                </div>
+                <button class="btn" onclick="recordUserAction()">记录行为</button>
+                <div id="action-response" class="response" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001';
+        
+        async function makeRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                
+                const data = await response.json();
+                return { success: response.ok, data, status: response.status };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+        
+        function displayResponse(elementId, result) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            
+            const statusClass = result.success ? 'status-success' : 'status-error';
+            const statusText = result.success ? '成功' : '失败';
+            
+            element.innerHTML = `
+                <div style="margin-bottom: 10px;">
+                    <span class="status-indicator ${statusClass}"></span>
+                    <strong>状态: ${statusText}</strong>
+                    ${result.status ? `(HTTP ${result.status})` : ''}
+                </div>
+                <pre>${JSON.stringify(result.data || result.error, null, 2)}</pre>
+            `;
+        }
+        
+        async function checkHealth() {
+            const result = await makeRequest(`${API_BASE}/health`);
+            displayResponse('health-response', result);
+        }
+        
+        async function getRecommendations() {
+            const userId = document.getElementById('rec-userId').value;
+            const query = document.getElementById('rec-query').value;
+            
+            const result = await makeRequest(`${API_BASE}/api/recommend`, {
+                method: 'POST',
+                body: JSON.stringify({ userId, query })
+            });
+            
+            displayResponse('rec-response', result);
+        }
+        
+        async function sendChatMessage() {
+            const userId = document.getElementById('chat-userId').value;
+            const message = document.getElementById('chat-message').value;
+            const sessionId = `session_${Date.now()}`;
+            
+            const result = await makeRequest(`${API_BASE}/api/chat`, {
+                method: 'POST',
+                body: JSON.stringify({ userId, message, sessionId })
+            });
+            
+            displayResponse('chat-response', result);
+        }
+        
+        async function recordUserAction() {
+            const userId = document.getElementById('action-userId').value;
+            const action = document.getElementById('action-type').value;
+            const itemId = document.getElementById('action-itemId').value;
+            const context = { timestamp: new Date().toISOString() };
+            
+            const result = await makeRequest(`${API_BASE}/api/user-action`, {
+                method: 'POST',
+                body: JSON.stringify({ userId, action, itemId, context })
+            });
+            
+            displayResponse('action-response', result);
+        }
+        
+        // 页面加载时自动检查健康状态
+        window.addEventListener('load', () => {
+            checkHealth();
+        });
+    </script>
+</body>
+</html>

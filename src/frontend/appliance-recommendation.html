@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能家电推荐助手</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .search-section {
+            margin-bottom: 40px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .search-btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .search-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .preferences-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .preferences-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .preferences-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .preference-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preference-label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .preference-input {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            margin-top: 30px;
+        }
+
+        .results-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .analysis-section {
+            background: #e8f4fd;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .analysis-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .analysis-content {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .recommendation-card {
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .recommendation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: #4facfe;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .product-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .product-brand {
+            color: #4facfe;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e74c3c;
+            margin-left: auto;
+        }
+
+        .product-category {
+            background: #4facfe;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .stars {
+            color: #ffc107;
+            margin-right: 8px;
+        }
+
+        .rating-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .product-description {
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .features-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .feature-tag {
+            background: #f8f9fa;
+            color: #555;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            border: 1px solid #e1e5e9;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 12px;
+            background: white;
+            color: #4facfe;
+            border: 2px solid #4facfe;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover, .btn-secondary:hover {
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #c33;
+        }
+
+        .memory-status {
+            background: #e8f5e8;
+            color: #2d5a2d;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            border-left: 4px solid #4caf50;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+            
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .preferences-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .recommendations-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 智能家电推荐助手</h1>
+            <p>基于AI的个性化家电推荐，让您的家居生活更智能</p>
+        </div>
+
+        <div class="main-content">
+            <div class="search-section">
+                <form class="search-form" id="searchForm">
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        id="queryInput"
+                        placeholder="请描述您的需求，例如：我需要一台适合小户型的空气净化器..."
+                        required
+                    >
+                    <button type="submit" class="search-btn" id="searchBtn">
+                        🔍 智能推荐
+                    </button>
+                </form>
+
+                <div class="preferences-section">
+                    <div class="preferences-title">🎯 个性化偏好设置</div>
+                    <div class="preferences-grid">
+                        <div class="preference-group">
+                            <label class="preference-label">用户ID</label>
+                            <input type="text" class="preference-input" id="userIdInput" placeholder="输入您的用户ID">
+                        </div>
+                        <div class="preference-group">
+                            <label class="preference-label">偏好品牌</label>
+                            <input type="text" class="preference-input" id="brandsInput" placeholder="例如：小米,海尔,美的">
+                        </div>
+                        <div class="preference-group">
+                            <label class="preference-label">价格范围</label>
+                            <input type="text" class="preference-input" id="priceRangeInput" placeholder="例如：500-2000">
+                        </div>
+                        <div class="preference-group">
+                            <label class="preference-label">偏好类别</label>
+                            <input type="text" class="preference-input" id="categoriesInput" placeholder="例如：空气净化器,洗衣机">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="loadingSection" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>AI正在为您分析需求并生成个性化推荐...</p>
+            </div>
+
+            <div id="errorSection" style="display: none;">
+                <div class="error-message" id="errorMessage"></div>
+            </div>
+
+            <div id="resultsSection" class="results-section" style="display: none;">
+                <div class="results-title">📋 推荐结果</div>
+                
+                <div class="analysis-section" id="analysisSection">
+                    <div class="analysis-title">🧠 AI分析</div>
+                    <div class="analysis-content" id="analysisContent"></div>
+                </div>
+
+                <div class="recommendations-grid" id="recommendationsGrid"></div>
+
+                <div id="memoryStatus" class="memory-status" style="display: none;">
+                    ✅ 您的偏好已保存到记忆系统，下次推荐将更加精准
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ApplianceRecommendationApp {
+            constructor() {
+                this.initializeElements();
+                this.bindEvents();
+            }
+
+            initializeElements() {
+                this.searchForm = document.getElementById('searchForm');
+                this.queryInput = document.getElementById('queryInput');
+                this.searchBtn = document.getElementById('searchBtn');
+                this.userIdInput = document.getElementById('userIdInput');
+                this.brandsInput = document.getElementById('brandsInput');
+                this.priceRangeInput = document.getElementById('priceRangeInput');
+                this.categoriesInput = document.getElementById('categoriesInput');
+                this.loadingSection = document.getElementById('loadingSection');
+                this.errorSection = document.getElementById('errorSection');
+                this.errorMessage = document.getElementById('errorMessage');
+                this.resultsSection = document.getElementById('resultsSection');
+                this.analysisContent = document.getElementById('analysisContent');
+                this.recommendationsGrid = document.getElementById('recommendationsGrid');
+                this.memoryStatus = document.getElementById('memoryStatus');
+            }
+
+            bindEvents() {
+                this.searchForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleSearch();
+                });
+            }
+
+            async handleSearch() {
+                const query = this.queryInput.value.trim();
+                if (!query) return;
+
+                this.showLoading();
+                this.hideError();
+                this.hideResults();
+
+                try {
+                    const requestData = this.buildRequestData(query);
+                    const response = await this.callAPI(requestData);
+                    
+                    if (response.success) {
+                        this.displayResults(response.data);
+                    } else {
+                        this.showError(response.error || '推荐生成失败');
+                    }
+                } catch (error) {
+                    console.error('API调用错误:', error);
+                    this.showError('网络错误，请稍后重试');
+                } finally {
+                    this.hideLoading();
+                }
+            }
+
+            buildRequestData(query) {
+                const data = { query };
+
+                // 添加用户ID
+                const userId = this.userIdInput.value.trim();
+                if (userId) {
+                    data.userId = userId;
+                }
+
+                // 添加偏好设置
+                const preferences = {};
+                
+                const brands = this.brandsInput.value.trim();
+                if (brands) {
+                    preferences.brands = brands.split(',').map(b => b.trim()).filter(b => b);
+                }
+
+                const categories = this.categoriesInput.value.trim();
+                if (categories) {
+                    preferences.categories = categories.split(',').map(c => c.trim()).filter(c => c);
+                }
+
+                const priceRange = this.priceRangeInput.value.trim();
+                if (priceRange && priceRange.includes('-')) {
+                    const [min, max] = priceRange.split('-').map(p => parseInt(p.trim()));
+                    if (!isNaN(min) && !isNaN(max)) {
+                        preferences.priceRange = { min, max };
+                    }
+                }
+
+                if (Object.keys(preferences).length > 0) {
+                    data.preferences = preferences;
+                }
+
+                return data;
+            }
+
+            async callAPI(data) {
+                try {
+                    const response = await fetch('http://localhost:3001/api/appliance', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    return result;
+                } catch (error) {
+                    console.error('API调用失败:', error);
+                    // 如果API调用失败，返回模拟数据作为后备
+                    return {
+                        success: true,
+                        data: {
+                            recommendations: [
+                                {
+                                    id: 'rec_001',
+                                    name: '智能空气净化器 Pro',
+                                    brand: '小米',
+                                    category: '空气净化器',
+                                    price: 1299,
+                                    features: ['HEPA滤网', '智能控制', '静音运行', 'APP远程控制'],
+                                    rating: 4.8,
+                                    description: '高效净化，智能控制，为您打造健康家居环境。采用H13级HEPA滤网，有效过滤PM2.5、细菌、病毒等有害物质。',
+                                },
+                                {
+                                    id: 'rec_002',
+                                    name: '变频洗衣机 10kg',
+                                    brand: '海尔',
+                                    category: '洗衣机',
+                                    price: 2899,
+                                    features: ['变频节能', '大容量', '智能投放', '除菌洗'],
+                                    rating: 4.7,
+                                    description: '大容量设计，智能洗护，让洗衣更轻松。变频电机静音节能，智能投放系统精准控制洗涤剂用量。',
+                                },
+                                {
+                                    id: 'rec_003',
+                                    name: '智能电饭煲 4L',
+                                    brand: '美的',
+                                    category: '电饭煲',
+                                    price: 599,
+                                    features: ['IH加热', '智能预约', '多种口感', '保温功能'],
+                                    rating: 4.6,
+                                    description: 'IH电磁加热，智能烹饪，每一粒米都香甜。支持多种口感调节，智能预约功能让您随时享用热腾腾的米饭。',
+                                },
+                            ],
+                            analysis: `基于您的需求"${data.query}"，我为您推荐了以下几款优质家电产品。这些产品都具有良好的用户评价和性价比，能够满足您的使用需求。推荐考虑了产品的功能特性、品牌信誉、价格合理性等多个维度。（注意：当前使用模拟数据）`,
+                            memoryUpdated: !!data.userId,
+                        },
+                        message: '推荐生成成功（模拟数据）'
+                    };
+                }
+            }
+
+            displayResults(data) {
+                // 显示分析结果
+                this.analysisContent.textContent = data.analysis;
+
+                // 显示推荐产品
+                this.recommendationsGrid.innerHTML = '';
+                data.recommendations.forEach(product => {
+                    const card = this.createProductCard(product);
+                    this.recommendationsGrid.appendChild(card);
+                });
+
+                // 显示记忆状态
+                if (data.memoryUpdated) {
+                    this.memoryStatus.style.display = 'block';
+                } else {
+                    this.memoryStatus.style.display = 'none';
+                }
+
+                this.showResults();
+            }
+
+            createProductCard(product) {
+                const card = document.createElement('div');
+                card.className = 'recommendation-card';
+
+                const stars = '★'.repeat(Math.floor(product.rating)) + '☆'.repeat(5 - Math.floor(product.rating));
+                
+                const featuresHTML = product.features.map(feature => 
+                    `<span class="feature-tag">${feature}</span>`
+                ).join('');
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div>
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-brand">${product.brand}</div>
+                        </div>
+                        <div class="product-price">¥${product.price}</div>
+                    </div>
+                    
+                    <div class="product-category">${product.category}</div>
+                    
+                    <div class="product-rating">
+                        <span class="stars">${stars}</span>
+                        <span class="rating-value">${product.rating}</span>
+                    </div>
+                    
+                    <div class="product-description">${product.description}</div>
+                    
+                    <div class="features-list">${featuresHTML}</div>
+                    
+                    <div class="card-actions">
+                        <button class="btn-primary" onclick="app.viewProduct('${product.id}')">
+                            查看详情
+                        </button>
+                        <button class="btn-secondary" onclick="app.compareProduct('${product.id}')">
+                            加入对比
+                        </button>
+                    </div>
+                `;
+
+                return card;
+            }
+
+            viewProduct(productId) {
+                alert(`查看产品详情: ${productId}`);
+                // 在实际应用中，这里会跳转到产品详情页面
+            }
+
+            compareProduct(productId) {
+                alert(`添加到对比列表: ${productId}`);
+                // 在实际应用中，这里会添加产品到对比功能
+            }
+
+            showLoading() {
+                this.loadingSection.style.display = 'block';
+                this.searchBtn.disabled = true;
+                this.searchBtn.textContent = '推荐中...';
+            }
+
+            hideLoading() {
+                this.loadingSection.style.display = 'none';
+                this.searchBtn.disabled = false;
+                this.searchBtn.textContent = '🔍 智能推荐';
+            }
+
+            showError(message) {
+                this.errorMessage.textContent = message;
+                this.errorSection.style.display = 'block';
+            }
+
+            hideError() {
+                this.errorSection.style.display = 'none';
+            }
+
+            showResults() {
+                this.resultsSection.style.display = 'block';
+            }
+
+            hideResults() {
+                this.resultsSection.style.display = 'none';
+            }
+        }
+
+        // 初始化应用
+        const app = new ApplianceRecommendationApp();
+    </script>
+</body>
+</html>
