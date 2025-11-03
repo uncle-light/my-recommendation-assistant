@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS mastra.messages (
 CREATE TABLE IF NOT EXISTS mastra.vectors (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     message_id UUID NOT NULL REFERENCES mastra.messages(id) ON DELETE CASCADE,
-    embedding vector(1536), -- OpenAI ep-20251016153453-g2d58 dimension
+    embedding vector(1536), -- 支持降维后的维度 (从2560降至1536)
     metadata JSONB DEFAULT '{}',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

@@ -9,32 +9,25 @@
 // {{START_MODIFICATIONS}}
 
 // 导入代理
-import { recommendationAgent } from './recommendation-agent';
-import { applianceAgent } from './appliance-agent-new';
+import { applianceAgent } from "./appliance-agent-new";
 
 // 导出推荐代理
-export { recommendationAgent, getRecommendations } from './recommendation-agent';
-export type { 
-  RecommendationAgentInput, 
-  RecommendationAgentOutput
-} from './recommendation-agent';
 
 // 导出新的家电代理
-export { 
+export {
   applianceAgent,
   queryApplianceAgent,
   searchAppliances,
   compareAppliances,
-  recommendAppliances
-} from './appliance-agent-new';
+  recommendAppliances,
+} from "./appliance-agent-new";
 export type {
   ApplianceAgentInput,
-  ApplianceAgentOutput
-} from './appliance-agent-new';
+  ApplianceAgentOutput,
+} from "./appliance-agent-new";
 
 // 集合所有Agent
 export const agents = {
-  recommendationAgent,
   applianceAgent,
 };
 

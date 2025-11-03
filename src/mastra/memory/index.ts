@@ -10,12 +10,22 @@
 
 import { Memory } from "@mastra/memory";
 import { PostgresStore, PgVector } from "@mastra/pg";
-import { openai } from "@ai-sdk/openai";
+
+import { createOpenAI } from "@ai-sdk/openai";
+const volcengine = createOpenAI({
+  apiKey: process.env.VOLCENGINE_API_KEY || "",
+  baseURL:
+    process.env.VOLCENGINE_BASE_URL ||
+    "https://ark.cn-beijing.volces.com/api/v3",
+});
 
 /**
  * Mastra.ai 记忆系统配置
- * 使用PostgreSQL作为存储后端，OpenAI嵌入器
+ * 使用PostgreSQL作为存储后端，支持降维的火山引擎嵌入器
  */
+
+// 创建支持降维的火山引擎嵌入器
+
 export const memory = new Memory({
   // PostgreSQL存储配置
   storage: new PostgresStore({
@@ -31,8 +41,8 @@ export const memory = new Memory({
       "postgresql://localhost:5432/recommendation_db",
   }),
 
-  // OpenAI嵌入器配置
-  embedder: openai.embedding("ep-20251016153453-g2d58"),
+  // 使用支持降维的火山引擎嵌入器
+  embedder: volcengine.embedding("ep-20251103145552-bg2vl"),
 
   // 记忆选项配置
   options: {

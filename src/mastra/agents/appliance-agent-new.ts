@@ -12,12 +12,13 @@ import { Agent } from "@mastra/core/agent";
 import { createOpenAI } from "@ai-sdk/openai";
 import { z } from "zod";
 import { memory } from "../memory";
-import { applianceTools, currentTimeTool } from "../tools";
 
 // 配置火山引擎模型
 const volcengine = createOpenAI({
-  apiKey: process.env.VOLCENGINE_API_KEY || '',
-  baseURL: process.env.VOLCENGINE_BASE_URL || 'https://ark.cn-beijing.volces.com/api/v3',
+  apiKey: process.env.VOLCENGINE_API_KEY || "",
+  baseURL:
+    process.env.VOLCENGINE_BASE_URL ||
+    "https://ark.cn-beijing.volces.com/api/v3",
 });
 
 /**
@@ -130,12 +131,9 @@ export const applianceAgent = new Agent({
 
 记住：你的目标是成为用户最信赖的家电购买顾问，通过记忆和学习提供越来越精准的服务。`,
 
-  model: volcengine("ep-m-20251024161251-sjljb"),
+  model: volcengine("ep-20250818100830-hsrg8"),
   memory,
-  tools: {
-    ...applianceTools,
-    currentTime: currentTimeTool,
-  },
+  tools: {},
 });
 
 /**
