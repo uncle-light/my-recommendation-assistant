@@ -8,9 +8,7 @@
     "test:coverage": "jest --coverage",
     "dev": "mastra dev",
     "build": "mastra build",
-    "start": "mastra start",
-    "api:dev": "tsx watch src/server.ts",
-    "api:start": "tsx src/server.ts"
+    "start": "mastra start"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +19,7 @@
     "node": ">=20.9.0"
   },
   "dependencies": {
+    "@ai-sdk/deepseek": "^1.0.26",
     "@ai-sdk/openai": "^2.0.56",
     "@mastra/core": "^0.23.1",
     "@mastra/evals": "^0.14.2",
