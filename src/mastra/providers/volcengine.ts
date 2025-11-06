@@ -1,6 +1,6 @@
-import { createDeepSeek } from "@ai-sdk/deepseek";
+import { createOpenAI } from "@ai-sdk/openai";
 
-export const volcengine = createDeepSeek({
+export const volcengine = createOpenAI({
   apiKey: process.env.VOLCENGINE_API_KEY || "",
   baseURL:
     process.env.VOLCENGINE_BASE_URL ||

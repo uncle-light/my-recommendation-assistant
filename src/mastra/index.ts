@@ -2,19 +2,21 @@ import { Mastra } from "@mastra/core";
 import {} from "@mastra/pg";
 import { PinoLogger } from "@mastra/loggers";
 
-import { applianceAgent } from "./agents";
+import { applianceAgent, bayerAgent } from "./agents";
 import { SamplingStrategyType } from "@mastra/core/ai-tracing";
 import { postgres } from "../database/postgres";
+import { pgVector } from "../database/pgVector";
 
 export const mastra = new Mastra({
   agents: {
     applianceAgent,
+    bayerAgent,
   },
   storage: postgres,
   logger: new PinoLogger({
     level: "debug",
   }),
-
+  vectors: { pgVector },
   observability: {
     configs: {
       default: {
