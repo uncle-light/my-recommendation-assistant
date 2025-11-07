@@ -4,17 +4,18 @@ import { deepseek } from "../providers/deepseek";
 import { ToolCallFilter, TokenLimiter } from "@mastra/memory/processors";
 import { postgres } from "../../database/postgres";
 import { pgVector } from "../../database/pgVector";
+import { volcengine } from "../providers/volcengine";
 
 export const memory = new Memory({
   storage: postgres,
-  processors: [
-    new ToolCallFilter(), // 删除所有工具调用消息
-    new ToolCallFilter({ exclude: ["generateImageTool"] }), // 仅排除图像生成工具
-    new TokenLimiter(127000), // 放在最后
-  ],
+  // processors: [
+  //   new ToolCallFilter(), // 删除所有工具调用消息
+  //   new ToolCallFilter({ exclude: ["generateImageTool"] }), // 仅排除图像生成工具
+  //   new TokenLimiter(127000), // 放在最后
+  // ],
   vector: pgVector,
 
-  embedder: fastembed,
+  embedder: volcengine.embedding("ep-20251016153453-g2d58"),
   // 记忆选项配置
   options: {
     // 保留最近的消息数量

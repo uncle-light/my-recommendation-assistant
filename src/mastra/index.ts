@@ -1,4 +1,4 @@
-import { Mastra } from "@mastra/core";
+import { Mastra } from "@mastra/core/mastra";
 import {} from "@mastra/pg";
 import { PinoLogger } from "@mastra/loggers";
 
@@ -14,7 +14,7 @@ export const mastra = new Mastra({
   },
   storage: postgres,
   logger: new PinoLogger({
-    level: "debug",
+    level: "error",
   }),
   vectors: { pgVector },
   observability: {
